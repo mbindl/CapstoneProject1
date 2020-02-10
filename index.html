@@ -10,12 +10,26 @@
 
     <style>
       html,
-      body,
-      #viewDiv {
+      body {
+        padding: 0;
+        margin: 0;
         height: 100%;
         width: 100%;
-        margin: 0;
+      }
+
+      #viewDiv {
+        float: right;
         padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 70%;
+      }
+
+      #feature-node {
+        float: right;
+        width: 30%;
+        height: 100%;
+        padding: 1em;
       }
     </style>
 
@@ -147,6 +161,7 @@
             expanded: false
         });
         view.ui.add(legend, "bottom-left");
+        view.ui.add("feature-node", "top-right")
       });
 	</script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -160,6 +175,7 @@
     </script>
   </head>
   <body>
+    <div id="feature-node" class="esri-widget"></div>
     <div id="viewDiv"></div>
   </body>
 </html>
