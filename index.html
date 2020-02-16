@@ -59,6 +59,7 @@
         WebMap,
         Map,
         MapView,
+        Geoprocessor,
         TileLayer,
         FeatureLayer,
         Expand,
@@ -72,7 +73,11 @@
           {
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
             };
-                
+        
+        var gpUrl =
+          "";
+
+          
         var webmap = new WebMap({
               portalItem: { // autocasts as new PortalItem()
                 id: "1946a89da2e442488ef6ce969be0ecce"
