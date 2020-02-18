@@ -45,6 +45,7 @@
         "esri/WebMap",
         "esri/Map",
         "esri/views/MapView",
+        "esri/tasks/Geoprocessor",
         "esri/layers/TileLayer",
         "esri/layers/FeatureLayer",
         "esri/widgets/Expand",
@@ -74,9 +75,6 @@
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
             };
         
-        var gpUrl =
-          "";
-
           
         var webmap = new WebMap({
               portalItem: { // autocasts as new PortalItem()
@@ -90,6 +88,21 @@
               center: [-89.7,44.8],
               zoom: 7
             });
+        
+        // initialize geoprocessor task
+        var gpUrl =
+          "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
+
+        var gp = new Geoprocessor({
+          url: gpUrl,
+          outSpatialReference: {
+            wkid: 102100
+          }
+        });
+          
+        var param = document.getElementById("kvalue").value;
+          
+        gp.submitJob(param);
           
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
@@ -179,7 +192,13 @@
     </script>
   </head>
   <body>
-    <div id="feature-node" class="esri-widget"></div>
+    <div id="feature-node" class="esri-widget">
+    <form action="/action_page.php">
+      <label for="kvalue">k value:</label><br>
+      <input type="text" id="kvalue" name="kvalue" value="2"><br>
+      <input type="submit" value="Submit">
+    </form>  
+    </div>
     <div id="viewDiv"></div>
   </body>
 </html>
