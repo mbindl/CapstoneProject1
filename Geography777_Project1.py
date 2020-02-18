@@ -182,13 +182,3 @@ try:
 except:
     # If an error occurred when running the tool, print out the error message.
     print(arcpy.GetMessages())
-
-# transfer attributes of residual values to tesselation Layer
-fieldJoinCalc('hexbin', ['ID', 'Residual'], 'OLS', ['ID', 'Residual'])
-print ("The 'Residual' field in the hexbin data has been updated")
-
-# transfer attributes of estimated values to tesselation Layer
-fieldJoinCalc('hexbin', ['ID', 'Estimated'], 'OLS', ['ID', 'Estimated'])
-print ("The 'Estimated' field in the hexbin data has been updated")
-
-
