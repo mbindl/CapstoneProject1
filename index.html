@@ -241,7 +241,7 @@
               High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancers by cataloging the location of all cancer occurrences over a ten-year period. In addition, they assembled a database of nitrate levels in a group of test wells throughout the state.
             </p>
             <p>              
-              This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
+              This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting (IDW) analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
             </p>
             <p>    
                 Please choose a value for <i>k</i> that is greater than 1:  
@@ -250,10 +250,10 @@
               <input type="text" id="kvalue" name="kvalue" value="2">
               <input type="submit" value="Submit">
             </form>  
-            <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares regression to determine if nitrate concentrations are related to cancer occurrences.
+            <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
             </p>
             <p>   
-            The results of the regression can be seen here mapped as the graduated color of the Residual value or obtained by clicking on a hexbin to view the attributes in a popup.
+            The results of the OLS regression can be seen here mapped color ramp of the Residual values or by clicking on a hexbin to view the attributes in a popup.
             </p>
         </div>
     </div>
