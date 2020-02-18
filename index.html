@@ -224,14 +224,13 @@
               High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancers by cataloging the location of all cancer occurrences over a ten-year period. In addition, they assembled a database of nitrate levels in a group of test wells throughout the state.
             </p>
             <p>              
-              This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application is to perform an inverse distance weighting analysis to produce a raster map of nitrate levels. Interpolating the nitrate levels using a weighted distance coeficient k in the process. There is no theory to say what the distance exponent k should be. 
+              This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
             </p>
             <p>    
-                Please choose a value for k that is greater than 1.        
+                Please choose a value for <i>k</i> that is greater than 1:  
             </p>
             <form>
-              <label for="kvalue">k value:</label><br>
-              <input type="text" id="kvalue" name="kvalue" value="2"><br>
+              <input type="text" id="kvalue" name="kvalue" value="2">
               <input type="submit" value="Submit">
             </form>  
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares regression to determine if nitrate concentrations are related to cancer occurrences.
