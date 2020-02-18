@@ -55,7 +55,8 @@
         "esri/widgets/LayerList/LayerListViewModel",
         "esri/widgets/Home",
         "esri/widgets/Legend",
-        "esri/widgets/Print"
+        "esri/widgets/Print",
+        "dojo/dom"
       ], function(
         esriConfig,
         WebMap,
@@ -71,7 +72,8 @@
         LayerListVM,
         Home,
         Legend,
-        Print
+        Print,
+        dom
       ) {
           {
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
@@ -102,9 +104,24 @@
           }
         });
           
-        var param = document.getElementById("kvalue").value;
+        var gpParams = {
+            k: dom.byId("kvalue").value
+            }
           
-        gp.submitJob(param);
+        gp.submitJob(gpParams);
+          
+//        function statusCallback(jobInfo){
+//            console.log(jobInfo.jobStatus);
+//        });
+//        
+//        function completeCallback(jobInfo){
+//            console.log("getting data");
+//            gp.getResultData(jobInfo.jobId, "Result", displayResult);
+//        }
+//        
+//        function displayResult (result, messages){
+//        }
+          
           
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
