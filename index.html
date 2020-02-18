@@ -55,6 +55,7 @@
         "esri/widgets/LayerList/LayerListViewModel",
         "esri/widgets/Home",
         "esri/widgets/Legend",
+        "esri/widgets/Print"
       ], function(
         esriConfig,
         WebMap,
@@ -69,7 +70,8 @@
         LayerList,
         LayerListVM,
         Home,
-        Legend
+        Legend,
+        Print
       ) {
           {
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
@@ -134,7 +136,28 @@
         // add layer list button to the top right corner of the view
         view.ui.add(layerListExpand, "top-right");
 
+        // function to create print service
+        view.when(function() {
+            var print = new Print({
+                container: document.createElement("div"),
+                view: view,
+                // specify print service url
+                printServiceUrl:"https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+        });
 
+        // Create Print Button
+        var printExpand = new Expand({
+            expandIconClass: "esri-icon-printer",  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+            expandTooltip: "Print",
+            view: view,
+            autoCollapse: true,
+            content: print.domNode
+            });
+
+        // Add print widget to the top right corner of the view
+        view.ui.add(printExpand, "top-right");
+        });
+          
         // move zoom buttons to top left
         view.ui.move("zoom", "top-left");
                 
@@ -180,6 +203,7 @@
         });
         view.ui.add(legend, "bottom-left");
       });
+
 	</script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-72607582-23"></script>
@@ -193,7 +217,7 @@
   </head>
   <body>
     <div id="feature-node" class="esri-widget">
-    <form action="/action_page.php">
+    <form>
       <label for="kvalue">k value:</label><br>
       <input type="text" id="kvalue" name="kvalue" value="2"><br>
       <input type="submit" value="Submit">
