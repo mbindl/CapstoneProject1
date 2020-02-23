@@ -6,38 +6,37 @@
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
-    <title>Geography 777 - Project 1</title>
-
+    <title>View padding - 4.14</title>
     <style>
       html,
-      body {
+      body,
+      #viewDiv {
         padding: 0;
         margin: 0;
         height: 100%;
         width: 100%;
       }
 
-      #viewDiv {
-        float: right;
-        padding: 0;
-        margin: 0;
+      #sidebar {
+        z-index: 99;
+        position: absolute;
+        top: 0;
+        right: 0;
         height: 100%;
-        width: 70%;
+        background: rgba(0, 0, 0, 0.5);
+        width: 400px;
       }
 
-      #feature-node {
-        float: right;
-        width: 30%;
-        height: 100%;
-        padding: 1em;
+      #text {
+        color: white;
+        padding: 3%;
       }
     </style>
-
     <link
-          rel="stylesheet"
-          href="https://js.arcgis.com/4.13/esri/themes/light/main.css"
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
     />
-    <script src="https://js.arcgis.com/4.13/"></script>
+    <script src="https://js.arcgis.com/4.14/"></script>
 
     <script>
       require([
@@ -90,7 +89,10 @@
               map: webmap,  // The WebMap instance created above
               container: "viewDiv",
               center: [-89.7,44.8],
-              zoom: 7
+              zoom: 7,
+              padding: {
+                right: 400 // Same value as the #sidebar width in CSS
+          }
             });
         
         // initialize geoprocessor task
@@ -216,27 +218,23 @@
                 style: "classic" // other styles include 'card'
                 }),
             view: view,
-            expanded: false
+            expanded: false,
+            padding: {
+                right: 400 // Same value as the #sidebar width in CSS
+          }
         });
         view.ui.add(legend, "bottom-right");
       });
 
 	</script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-72607582-23"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    //	  gtag('config', 'UA-72607582-23');
-    </script>
   </head>
+
   <body>
-    <div id="feature-node" class="esri-widget">
-        <div>
-          <h2>Cancer Rates and Nitrate Levels</h2>
-            <h3>An explatory analysis.</h3>
+    <div id="viewDiv">
+      <div id="sidebar" class="esri-widget">
+        <div id="text">
+        <h2>Cancer Rates and Nitrate Levels</h2>
+            <h3>An exploratory analysis.</h3>
           <p>
               High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancers by cataloging the location of all cancer occurrences over a ten-year period. In addition, they assembled a database of nitrate levels in a group of test wells throughout the state.
             </p>
@@ -256,7 +254,7 @@
             The results of the OLS regression are mapped here as a color ramp of the Residual values and available by clicking on a hexbin to view the attributes in a popup.
             </p>
         </div>
+      </div>
     </div>
-    <div id="viewDiv"></div>
   </body>
 </html>
