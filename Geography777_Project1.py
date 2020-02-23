@@ -13,6 +13,8 @@
 ## and the independent variable (nitrate prediction). The script then moves the residual and estimated values to
 ## attibute fields setup in the tesselation feature class.
 
+## --------------------------------------------------------------------------------------------##
+
 # Import system modules
 import os
 import arcpy
@@ -22,6 +24,8 @@ from arcpy.sa import *
 env.workspace = "//ARCPROD//c$//GISData//Geog777_Project_1.gdb"
 # Set Overwrite option
 env.OverwriteOutput = True
+
+## --------------------------------------------------------------------------------------------##
 
 # function to transfer attribute values from table to feature class
 def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
@@ -42,30 +46,6 @@ def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
                 updateRows.updateRow(updateRow)
     del valueDict
     print("Finished data transfer: " + strftime("%Y-%m-%d %H:%M:%S"))
-
-
-# Interpolate a series of nitrate well values
-#  saved as point features onto a rectangular
-#   raster using Inverse Distance Weighting (IDW).
-# Requirements: Spatial Analyst Extension
-
-# Set local variables
-outRaster = "idw_nitrate"
-inPointFeatures = "Well_Nitrate"
-zField = "nitr_con"
-cellSize = 0.01
-k = arcpy.GetParameter(0)
-searchRadius = RadiusVariable('', 12)
-
-# delete output if it exists
-if arcpy.Exists(outRaster):
-    arcpy.Delete_management(outRaster)
-
-# Execute IDW
-outIDW = Idw(inPointFeatures, zField, cellSize, k, searchRadius)
-
-# Save the output
-outIDW.save(outRaster)
 
 ## --------------------------------------------------------------------------------------------##
 
@@ -105,26 +85,38 @@ with arcpy.da.UpdateCursor(inFeatures, updateFieldsList) as cursor:
         row[1] = row[0]
         cursor.updateRow(row)
 
-## ---------------------------------------------------------------------------- ##
-## Convert Cancer Rate feature class to raster
+## --------------------------------------------------------------------------------------------##
 
-# Delete output raster if it exists
-if arcpy.Exists("cancer_rate"):
-    arcpy.Delete_management("cancer_rate")
+# Interpolate a series of nitrate well values
+#  saved as point features onto a rectangular
+#   raster using Inverse Distance Weighting (IDW).
+# Requirements: Spatial Analyst Extension
+
 # Set local variables
-inFeature = "CancerRate_CensusTract"
-outRaster = "cancer_rate"
-# cellSize = 0.01
-field = "GEOID10"
+outRaster = os.path.join("in_memory", "idw_nitrate")
+inPointFeatures = "Well_Nitrate"
+zField = "nitr_con"
+cellSize = 0.01
+k = arcpy.GetParameter(0)
+searchRadius = RadiusVariable('', 12)
 
-# Execute FeatureToRaster
-arcpy.FeatureToRaster_conversion(inFeature, field, outRaster)
+# delete output if it exists
+if arcpy.Exists(outRaster):
+    arcpy.Delete_management(outRaster)
+
+# Execute IDW
+outIDW = Idw(inPointFeatures, zField, cellSize, k, searchRadius)
+
+# # Save the output
+# outIDW.save(outRaster)
+
+## --------------------------------------------------------------------------------------------##
 
 ## ZonalStatisticsAsTable - Aggregate Nitrate Values to Hexbins
 # Set local variables
 inZoneData = "hexbin"
 zoneField = "GRID_ID"
-inValueRaster = "idw_nitrate"
+inValueRaster = outIDW
 outTable = "zonalstat_nitrate"
 
 if arcpy.Exists(outTable):
@@ -138,6 +130,23 @@ outZSaT = ZonalStatisticsAsTable(inZoneData, zoneField, inValueRaster,
 fieldJoinCalc('hexbin', ['GRID_ID', 'NitrateRate'], 'zonalstat_nitrate', ['GRID_ID', 'MEAN'])
 print ("The 'Nitrate Rate' field in the hexbin data has been updated")
 
+## --------------------------------------------------------------------------------------------##
+
+## Convert Cancer Rate feature class to raster
+
+# Delete output raster if it exists
+if arcpy.Exists("cancer_rate"):
+    arcpy.Delete_management("cancer_rate")
+# Set local variables
+inFeature = "CancerRate_CensusTract"
+outRaster = os.path.join("in_memory", "cancer_rate")
+# cellSize = 0.01
+field = "GEOID10"
+
+# Execute FeatureToRaster
+arcpy.FeatureToRaster_conversion(inFeature, field, outRaster)
+
+## --------------------------------------------------------------------------------------------##
 
 ## ZonalStatisticsAsTable - Aggregate Cancer Rates to Hexbins
 # Set local variables
@@ -155,6 +164,8 @@ outZSaT = ZonalStatisticsAsTable(inZoneData, zoneField, inValueRaster,
 # transfer attributes to hexbins
 fieldJoinCalc('hexbin', ['GRID_ID', 'CancerRate'], 'zonalstat_tract_cancer', ['GRID_ID', 'MEAN'])
 print ("The 'Cancer Rate' field in the hexbin data has been updated")
+
+## --------------------------------------------------------------------------------------------##
 
 ## Perform Oridanry Least Squares Regression
 
@@ -182,3 +193,6 @@ try:
 except:
     # If an error occurred when running the tool, print out the error message.
     print(arcpy.GetMessages())
+
+## --------------------------------------------------------------------------------------------##
+
