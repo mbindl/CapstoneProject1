@@ -76,7 +76,7 @@ arcpy.AddField_management(inFeatures, fieldName2, "DOUBLE")
 arcpy.AddField_management(inFeatures, fieldName3, "DOUBLE")
 arcpy.AddField_management(inFeatures, fieldName4, "DOUBLE")
 arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
-arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
+arcpy.AddField_management(inFeatures, fieldName6, "DOUBLE")
 
 # create unqique integer id field for OLS to use
 updateFieldsList = ['OBJECTID', 'ID']
@@ -97,7 +97,7 @@ outRaster = os.path.join("in_memory", "idw_nitrate")
 inPointFeatures = "Well_Nitrate"
 zField = "nitr_con"
 cellSize = 0.01
-k = arcpy.GetParameter(0)
+k = int(arcpy.GetParameter(0))
 searchRadius = RadiusVariable('', 12)
 
 # delete output if it exists
