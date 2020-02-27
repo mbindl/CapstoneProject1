@@ -55,6 +55,7 @@
         "esri/widgets/Home",
         "esri/widgets/Legend",
         "esri/widgets/Print",
+        "esri/renderers/ClassBreaksRenderer",
         "dojo/dom"
       ], function(
         esriConfig,
@@ -72,13 +73,14 @@
         Home,
         Legend,
         Print,
+        ClassBreaksRenderer,
         dom
       ) {
+
           {
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
             };
         
-          
         var webmap = new WebMap({
               portalItem: { // autocasts as new PortalItem()
                 id: "1946a89da2e442488ef6ce969be0ecce"
@@ -94,37 +96,107 @@
                 right: 400 // Same value as the #sidebar width in CSS
           }
             });
-        
-        // initialize geoprocessor task
-        var gpUrl =
-          "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
+          
+//        document
+//          .getElementById("submit")
+//          .addEventListener("click", runAnalysis);
+//
+//        function runAnalysis() {
+//              var message = document.getElementById("message");
+//        // initialize geoprocessor task
+//            var gpUrl =
+//              "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
+//    
+//            var gp = new Geoprocessor({
+//              url: gpUrl,
+//              outSpatialReference: {
+//                wkid: 102100
+//              }
+//            });
+//              
+//            var gpParams = {
+//                k: dom.byId("kvalue").value,
+//                HexSize: dom.byID("hexsize")
+//                }
+//              
+//            gp.submitJob(gpParams).then(drawResultData);
+//          }
+//
+//        function drawResultData(result) {
+//            clearAll()
+//            webmap.add(layerCancer);
+//            webmap.add(layerNitrates);
+//            webmap.add(layerResiduals);
+//            webmap.add(layerStdDev);
+//            });
 
-        var gp = new Geoprocessor({
-          url: gpUrl,
-          outSpatialReference: {
-            wkid: 102100
+          
+        const defaultSym = {
+          type: "simple-fill", // autocasts as new SimpleFillSymbol()
+          outline: {
+            // autocasts as new SimpleLineSymbol()
+            color: [128, 128, 128, 0.2],
+            width: "0.5px"
           }
-        });
-          
-        var gpParams = {
-            k: dom.byId("kvalue").value
+        };
+
+        /*****************************************************************
+         * Set a color visual variable on the renderer. Color visual variables
+         * create continuous ramps that map low data values to weak or
+         * neutral colors and high data values to strong/deep colors. Features
+         * with data values in between the min and max data values are assigned
+         * a color proportionally between the min and max colors.
+         *****************************************************************/
+
+        const rendererCancer = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym,
+          label: "Hex Bin",
+          visualVariables: [
+            {
+              type: "color",
+              field: "CancerRate",
+//              normalizationField: "",
+              legendOptions: {
+                title: ""
+              },
+              stops: [
+                {
+                  value: 500,
+                  color: "#FFFFD4",
+                  label: "< 500"
+                },
+                {
+                  value: 750,
+                  color: "#FED98E",
+                },
+                {
+                  value: 1000,
+                  color: "#FE9929",
+                  label: "< 1000"
+                },
+                {
+                  value: 1250,
+                  color: "#D95F0E",
+                },
+                {
+                  value: 1500,
+                  color: "#993404",
+                  label: "< 1500"
+                }
+              ]
             }
-          
-        gp.submitJob(gpParams);
-          
-//        function statusCallback(jobInfo){
-//            console.log(jobInfo.jobStatus);
-//        });
-//        
-//        function completeCallback(jobInfo){
-//            console.log("getting data");
-//            gp.getResultData(jobInfo.jobId, "Result", displayResult);
-//        }
-//        
-//        function displayResult (result, messages){
-//        }
-          
-          
+          ]
+        };
+
+        var layerCancer = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+          title : "Cancer Rate (People Per 10k)",
+          renderer: rendererCancer
+        }); 
+
+        webmap.add(layerCancer);
+    
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
         const layerList = new LayerList({
@@ -218,17 +290,15 @@
                 style: "classic" // other styles include 'card'
                 }),
             view: view,
-            expanded: false,
-            padding: {
-                right: 400 // Same value as the #sidebar width in CSS
-          }
+            expanded: true
         });
+          
         view.ui.add(legend, "bottom-right");
+    
       });
-
-	</script>
-  </head>
-
+    </script>
+  
+</head>
   <body>
     <div id="viewDiv">
       <div id="sidebar" class="esri-widget">
@@ -242,12 +312,13 @@
               This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting (IDW) analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
             </p>
             <p>    
-                Please choose a value for <i>k</i> that is greater than 1:  
+                Please choose a value for <i>k</i> that is greater than 1 and a <i>Hex Bin</i> size (sq. mi.) to aggregate the analysis results:  
             </p>
             <form>
               <input type="text" id="kvalue" name="kvalue" value="2">
-              <input type="submit" value="Submit">
-            </form>  
+              <input type="text" id="HexSize" name="HexSize" value="500 Sqaure Miles">
+              <input type="submit" value="Run Analysis">
+            </form>             
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
             </p>
             <p>   

@@ -97,7 +97,7 @@ outRaster = os.path.join("in_memory", "idw_nitrate")
 inPointFeatures = "Well_Nitrate"
 zField = "nitr_con"
 cellSize = 0.01
-k = int(arcpy.GetParameter(0))
+k = 2
 searchRadius = RadiusVariable('', 12)
 
 # delete output if it exists
@@ -139,7 +139,7 @@ if arcpy.Exists("cancer_rate"):
     arcpy.Delete_management("cancer_rate")
 # Set local variables
 inFeature = "CancerRate_CensusTract"
-outRaster = os.path.join("in_memory", "cancer_rate")
+outRaster = "cancer_rate"
 # cellSize = 0.01
 field = "GEOID10"
 
@@ -190,6 +190,10 @@ try:
     # transfer attributes to Parcel Layer
     fieldJoinCalc('hexbin', ['ID', 'Estimated'], 'OLS', ['ID', 'Estimated'])
     print("The 'Estimated' field in the hexbin data has been updated")
+
+    # transfer attributes to Parcel Layer
+    fieldJoinCalc('hexbin', ['ID', 'StdResidual'], 'OLS', ['ID', 'StdResid'])
+    print("The 'StdResidual' field in the hexbin data has been updated")
 except:
     # If an error occurred when running the tool, print out the error message.
     print(arcpy.GetMessages())
