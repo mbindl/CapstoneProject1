@@ -140,13 +140,6 @@
           }
         };
 
-        /*****************************************************************
-         * Set a color visual variable on the renderer. Color visual variables
-         * create continuous ramps that map low data values to weak or
-         * neutral colors and high data values to strong/deep colors. Features
-         * with data values in between the min and max data values are assigned
-         * a color proportionally between the min and max colors.
-         *****************************************************************/
 
         const rendererCancer = {
           type: "simple", // autocasts as new SimpleRenderer()
@@ -158,7 +151,7 @@
               field: "CancerRate",
 //              normalizationField: "",
               legendOptions: {
-                title: ""
+                title: "Cancer Rate"
               },
               stops: [
                 {
@@ -188,32 +181,159 @@
             }
           ]
         };
-
+          
+        const rendererNitrate = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym,
+          label: "Hex Bin",
+          visualVariables: [
+            {
+              type: "color",
+              field: "NitrateRate",
+//              normalizationField: "",
+              legendOptions: {
+                title: "Nitrate Rate"
+              },
+              stops: [
+                {
+                  value: 2,
+                  color: "#F2F0F7",
+                  label: "< 2"
+                },
+                {
+                  value: 4,
+                  color: "#CBC9E2",
+                  label: "2-4"
+                },
+                {
+                  value: 6,
+                  color: "#9E9AC8",
+                  label: "4-6"
+                },
+                {
+                  value: 10,
+                  color: "#756BB1",
+                  label: "6-10"
+                },
+                {
+                  value: 15,
+                  color: "#54278F",
+                  label: "10-15"
+                }
+              ]
+            }
+          ]
+        };
+          
+        const rendererResidual = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym,
+          label: "Hex Bin",
+          visualVariables: [
+            {
+              type: "color",
+              field: "Residual",
+//              normalizationField: "",
+              legendOptions: {
+                title: "Residual"
+              },
+              stops: [
+                {
+                  value: 2,
+                  color: "#F2F0F7",
+                  label: "< 2"
+                },
+                {
+                  value: 4,
+                  color: "#CBC9E2",
+                  label: "2-4"
+                },
+                {
+                  value: 6,
+                  color: "#9E9AC8",
+                  label: "4-6"
+                },
+                {
+                  value: 10,
+                  color: "#756BB1",
+                  label: "6-10"
+                },
+                {
+                  value: 15,
+                  color: "#54278F",
+                  label: "10-15"
+                }
+              ]
+            }
+          ]
+        };
+          
+        const rendererStdDev= {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym,
+          label: "Hex Bin",
+          visualVariables: [
+            {
+              type: "color",
+              field: "StdResidual",
+//              normalizationField: "",
+              legendOptions: {
+                title: "Standard Deviation"
+              },
+              stops: [
+                {
+                  value: -1,
+                  color: "#000004",
+                  label: "-1"
+                },
+                {
+                  value: -0.25,
+                  color: "#51127C",
+                  label: "-0.25"
+                },
+                {
+                  value: 0.25,
+                  color: "#B7377A",
+                  label: " 0.25"
+                },
+                {
+                  value: 1,
+                  color: "#FC8861",
+                 label: " 1"
+                },
+                {
+                  value: 2.5,
+                  color: "#FC8861",
+                  label: " 2.5"
+                }
+              ]
+            }
+          ]
+        };
+          
         var layerCancer = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
           title : "Cancer Rate (People Per 10k)",
           renderer: rendererCancer
         }); 
-        
-        webmap.add(layerCancer);
-        
-//        var layerNitrate = new FeatureLayer({
-//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-//          title : "Nitrate Rate",
-//          renderer: rendererNitrate
-//        }); 
+                
+        var layerNitrate = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+          title : "Nitrate Rate",
+          renderer: rendererNitrate
+        }); 
 //        
-//        var layerResidual = new FeatureLayer({
-//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-//          title : "Nitrate Rate",
-//          renderer: rendererResidual
-//        }); 
-//          
-//        var layerStdDev = new FeatureLayer({
-//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-//          title : "Nitrate Rate",
-//          renderer: rendererStdDev
-//        })
+        var layerResidual = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+          title : "Residual",
+          renderer: rendererResidual
+        }); 
+          
+        var layerStdDev = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+          title : "Standard Deviation",
+          renderer: rendererStdDev
+        })
           
         var layerWell = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/0",
@@ -229,7 +349,12 @@
           url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/2",
           title : "County"
         });  
-
+          
+        webmap.add(layerCancer);
+        webmap.add(layerNitrate);
+        webmap.add(layerResidual);
+        webmap.add(layerStdDev);
+          
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
         const layerList = new LayerList({
@@ -349,7 +474,6 @@
             </p>
             <form>
               <input type="text" id="kvalue" name="kvalue" value="2">
-              <input type="text" id="HexSize" name="HexSize" value="500 Sqaure Miles">
               <input type="submit" value="Run Analysis">
             </form>             
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
