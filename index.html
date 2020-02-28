@@ -194,9 +194,42 @@
           title : "Cancer Rate (People Per 10k)",
           renderer: rendererCancer
         }); 
-
+        
         webmap.add(layerCancer);
-    
+        
+//        var layerNitrate = new FeatureLayer({
+//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+//          title : "Nitrate Rate",
+//          renderer: rendererNitrate
+//        }); 
+//        
+//        var layerResidual = new FeatureLayer({
+//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+//          title : "Nitrate Rate",
+//          renderer: rendererResidual
+//        }); 
+//          
+//        var layerStdDev = new FeatureLayer({
+//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+//          title : "Nitrate Rate",
+//          renderer: rendererStdDev
+//        })
+          
+        var layerWell = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/0",
+          title : "Well"
+        }); 
+        
+        var layerTract = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/1",
+          title : "Census Tract"
+        });
+          
+        var layerCounty = new FeatureLayer({
+          url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/2",
+          title : "County"
+        });  
+
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
         const layerList = new LayerList({
