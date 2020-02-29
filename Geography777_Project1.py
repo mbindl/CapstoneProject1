@@ -1,7 +1,7 @@
 ## Geography777_Project1.py
 
 ## Created as part of the requreiments for the Master's in Cartography, GIS, and Web Map Programming.
-## University of Wisconsin - Masdison - Geography 777 - Capstone - Project 1
+## University of Wisconsin - Madison - Geography 777 - Capstone - Project 1
 ## By: Mason Bindl
 ## Spring 2020
 
@@ -49,41 +49,7 @@ def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
 
 ## --------------------------------------------------------------------------------------------##
 
-## Generate Tesselation
 
-# # delete feature class if it already exists
-# if arcpy.Exists("hexbin"):
-#     arcpy.Delete_management("hexbin")
-#
-# tessellation_extent = arcpy.Extent(-10340405, 5234953, -9656979, 5992793)
-# spatial_ref = arcpy.SpatialReference(3857)
-# arcpy.GenerateTessellation_management("hexbin",
-#                                       tessellation_extent, "HEXAGON",
-#                                       "500 SquareMiles", spatial_ref)
-#
-# # Set local variables
-# inFeatures = "hexbin"
-# fieldName1 = "ID"
-# fieldName2 = "CancerRate"
-# fieldName3 = "NitrateRate"
-# fieldName4 = "Residual"
-# fieldName5 = "Estimated"
-# fieldName6 = "StdResidual"
-#
-# # Execute AddField twice for two new fields
-# arcpy.AddField_management(inFeatures, fieldName1, "SHORT")
-# arcpy.AddField_management(inFeatures, fieldName2, "DOUBLE")
-# arcpy.AddField_management(inFeatures, fieldName3, "DOUBLE")
-# arcpy.AddField_management(inFeatures, fieldName4, "DOUBLE")
-# arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
-# arcpy.AddField_management(inFeatures, fieldName6, "DOUBLE")
-
-# # create unqique integer id field for OLS to use
-# updateFieldsList = ['OBJECTID', 'ID']
-# with arcpy.da.UpdateCursor(inFeatures, updateFieldsList) as cursor:
-#     for row in cursor:
-#         row[1] = row[0]
-#         cursor.updateRow(row)
 
 ## --------------------------------------------------------------------------------------------##
 
@@ -93,11 +59,11 @@ def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
 # Requirements: Spatial Analyst Extension
 
 # Set local variables
-outRaster = os.path.join("in_memory", "idw_nitrate")
+outRaster = "idw_nitrate"
 inPointFeatures = "Well_Nitrate"
 zField = "nitr_con"
 cellSize = 0.01
-k = arcpy.GetParameter([0])
+k = arcpy.GetParameter(0)
 searchRadius = RadiusVariable('', 12)
 
 # delete output if it exists
@@ -190,10 +156,6 @@ try:
     # transfer attributes to Parcel Layer
     fieldJoinCalc('hexbin', ['ID', 'Estimated'], 'OLS', ['ID', 'Estimated'])
     print("The 'Estimated' field in the hexbin data has been updated")
-
-    # transfer attributes to Parcel Layer
-    fieldJoinCalc('hexbin', ['ID', 'StdResidual'], 'OLS', ['ID', 'StdResid'])
-    print("The 'StdResidual' field in the hexbin data has been updated")
 except:
     # If an error occurred when running the tool, print out the error message.
     print(arcpy.GetMessages())

@@ -8,7 +8,6 @@
     />
     <title>Mapping Nitrates and Cancer</title>
     <style>
-        @import "calcite-web-dark";
       html,
       body,
       #viewDiv {
@@ -32,10 +31,18 @@
         color: white;
         padding: 3%;
       }
-      
-        .btn{
-  color: $gray;
-}
+        
+      #run {
+        margin-top: 15px;
+        padding-left: 143px;
+        padding-right: 143px;
+        }
+        
+      #message {
+        color: white;
+        background-color: transparent; 
+        }
+
     </style>
     <link
       rel="stylesheet"
@@ -104,48 +111,57 @@
           }
             });
           
-        document
-          .getElementById("submit")
-          .addEventListener("click", runAnalysis);
-
-        // run the gp process with new k and remove layers and draw new results
-        function runAnalysis() {
-            var message = document.getElementById("message");
-            // initialize geoprocessor task
-            var gpUrl =
+        var gpUrl =
               "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
     
-            var gp = new Geoprocessor({
-              url: gpUrl,
-              outSpatialReference: {
-                wkid: 102100
+        var gp = new Geoprocessor({
+          url: gpUrl,
+          outSpatialReference: {
+            wkid: 102100
+          }
+        });
+        
+        // run analysis after button is clicked
+        document.getElementById("run").addEventListener("click", runAnalysis);
+        
+        var message = document.getElementById("message");
+        
+        // run the gp process with new k and remove layers and draw new results
+        function runAnalysis(){
+          removeLayers();
+          var k = document.getElementById("k").value;
+          console.log("Distance Decay Coefficient: " + k);
+          var params = {"k": k};
+          console.log('Input parameters: '+ dojo.toJson(params));
+          gp.submitJob(params).then(function(jobInfo) {
+            var options = {
+              statusCallback: function(jobInfo1) {
+                progTest(jobInfo1);
               }
-            });
-              
-            var gpParams = {
-                k: dom.byId("k").value
-//                HexSize: dom.byID("hexsize")
-                }
-              
-            gp.submitJob(gpParams).then(updateLayers);
-            
-            // Listen for any layer being added or removed in the Map
-            map.allLayers.on("change", function(event) {
-                console.log("Layer added: ", event.added);
-                console.log("Layer removed: ", event.removed);
-                console.log("Layer moved: ", event.moved);
-                });
-            }
+            };
+            // once the job completes, add resulting layer to map
+            gp.waitForJobCompletion(jobInfo.jobId, options).then(updateLayers)
+          });
+        }
+
+//          // Listen for any layer being added or removed in the Map
+//          map.allLayers.on("change", function(event) {
+//            console.log("Layer added: ", event.added);
+//            console.log("Layer removed: ", event.removed);
+//            console.log("Layer moved: ", event.moved);
+//            });
+//          }}
           
         // remove layers
         function removeLayers() {
-            map.removeMany([layerCancer, layerNitrates, layerStdDev]);
+            map.removeMany([layerCancer, layerNitrate, layerStdDev]);
             }
           
         // Add layers to the map with updated data
         function updateLayers() {
-            removeLayers()
-            map.addMany([layerCancer, layerNitrates, layerStdDev]);
+            // add layer message
+            message.innerText = "Adding layers to the map...";
+            map.addMany([layerCancer, layerNitrate, layerStdDev]);
             }
 
         // create a default symbology for unclassified features
@@ -383,9 +399,9 @@
           visible: false
         });  
         
-        map.add(layerWell);
-        map.add(layerTract);
         map.add(layerCounty);
+        map.add(layerTract);
+        map.add(layerWell);
         map.add(layerCancer);
         map.add(layerNitrate);
         map.add(layerStdDev);
@@ -486,7 +502,17 @@
         });
           
         view.ui.add(legend, "bottom-right");
-    
+        
+        // report back on job status to the console and browser
+        function progTest(value) {
+          message.innerText = "Job status: " + "'" + value.jobStatus + "'";
+          console.log(value.jobStatus);
+        }
+
+        function errBack(error) {
+          message.innerText = "";
+          console.log("gp error: ", error);
+        }
       });
     </script>
   
@@ -507,17 +533,18 @@
 
             <form>
             <label>
-                <h6><b>Please choose a value for <i>k</i> that is greater than 1:</b></h6>
-                <input type="number" id = "k" required placeholder="2" min = 1>
-                <button type="button" id = "submit" class = "btn btn-clear-white"><b>Run Analysis</b></button>
+                <h6><b>Choose a value for <i>k</i> greater than or equal to 1:</b></h6>
+                <input type="number" name = 'k' id = "k" required value=1 min = 1>
+                <button type="button" name = "run" id = "run" class = "btn btn-clear-white"><b>Run Analysis</b></button>
             </label>
+            <label id="message" class="label"></label>
             </form>             
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
+            The results of the OLS regression are mapped here as a color ramp of the residual standard deviation values and available by clicking on a hexbin to view the attributes in a popup.
             </p>
-            <p>   
-            The results of the OLS regression are mapped here as a color ramp of the Residual values and available by clicking on a hexbin to view the attributes in a popup.
-            </p>
+
         </div>
+        
       </div>
     </div>
   </body>
