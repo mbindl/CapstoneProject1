@@ -51,39 +51,39 @@ def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
 
 ## Generate Tesselation
 
-# delete feature class if it already exists
-if arcpy.Exists("hexbin"):
-    arcpy.Delete_management("hexbin")
+# # delete feature class if it already exists
+# if arcpy.Exists("hexbin"):
+#     arcpy.Delete_management("hexbin")
+#
+# tessellation_extent = arcpy.Extent(-10340405, 5234953, -9656979, 5992793)
+# spatial_ref = arcpy.SpatialReference(3857)
+# arcpy.GenerateTessellation_management("hexbin",
+#                                       tessellation_extent, "HEXAGON",
+#                                       "500 SquareMiles", spatial_ref)
+#
+# # Set local variables
+# inFeatures = "hexbin"
+# fieldName1 = "ID"
+# fieldName2 = "CancerRate"
+# fieldName3 = "NitrateRate"
+# fieldName4 = "Residual"
+# fieldName5 = "Estimated"
+# fieldName6 = "StdResidual"
+#
+# # Execute AddField twice for two new fields
+# arcpy.AddField_management(inFeatures, fieldName1, "SHORT")
+# arcpy.AddField_management(inFeatures, fieldName2, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName3, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName4, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName6, "DOUBLE")
 
-tessellation_extent = arcpy.Extent(-10340405, 5234953, -9656979, 5992793)
-spatial_ref = arcpy.SpatialReference(3857)
-arcpy.GenerateTessellation_management("hexbin",
-                                      tessellation_extent, "HEXAGON",
-                                      "500 SquareMiles", spatial_ref)
-
-# Set local variables
-inFeatures = "hexbin"
-fieldName1 = "ID"
-fieldName2 = "CancerRate"
-fieldName3 = "NitrateRate"
-fieldName4 = "Residual"
-fieldName5 = "Estimated"
-fieldName6 = "StdResidual"
-
-# Execute AddField twice for two new fields
-arcpy.AddField_management(inFeatures, fieldName1, "SHORT")
-arcpy.AddField_management(inFeatures, fieldName2, "DOUBLE")
-arcpy.AddField_management(inFeatures, fieldName3, "DOUBLE")
-arcpy.AddField_management(inFeatures, fieldName4, "DOUBLE")
-arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
-arcpy.AddField_management(inFeatures, fieldName6, "DOUBLE")
-
-# create unqique integer id field for OLS to use
-updateFieldsList = ['OBJECTID', 'ID']
-with arcpy.da.UpdateCursor(inFeatures, updateFieldsList) as cursor:
-    for row in cursor:
-        row[1] = row[0]
-        cursor.updateRow(row)
+# # create unqique integer id field for OLS to use
+# updateFieldsList = ['OBJECTID', 'ID']
+# with arcpy.da.UpdateCursor(inFeatures, updateFieldsList) as cursor:
+#     for row in cursor:
+#         row[1] = row[0]
+#         cursor.updateRow(row)
 
 ## --------------------------------------------------------------------------------------------##
 
@@ -97,7 +97,7 @@ outRaster = os.path.join("in_memory", "idw_nitrate")
 inPointFeatures = "Well_Nitrate"
 zField = "nitr_con"
 cellSize = 0.01
-k = 2
+k = arcpy.GetParameter([0])
 searchRadius = RadiusVariable('', 12)
 
 # delete output if it exists

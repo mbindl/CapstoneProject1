@@ -41,11 +41,9 @@
     <script>
       require([
         "esri/config",
-        "esri/WebMap",
         "esri/Map",
         "esri/views/MapView",
         "esri/tasks/Geoprocessor",
-        "esri/layers/TileLayer",
         "esri/layers/FeatureLayer",
         "esri/widgets/Expand",
         "esri/widgets/BasemapGallery",
@@ -59,11 +57,9 @@
         "dojo/dom"
       ], function(
         esriConfig,
-        WebMap,
         Map,
         MapView,
         Geoprocessor,
-        TileLayer,
         FeatureLayer,
         Expand,
         BasemapGallery,
@@ -76,19 +72,19 @@
         ClassBreaksRenderer,
         dom
       ) {
-
+        // set the active portal
           {
         esriConfig.portalUrl = "https://trpa.maps.arcgis.com";
             };
-        
-        var webmap = new WebMap({
-              portalItem: { // autocasts as new PortalItem()
-                id: "1946a89da2e442488ef6ce969be0ecce"
-              }
-            });
 
+        // create the map instance
+        var map = new Map({
+            basemap: "topo"
+            });
+        
+        // create the map view with padding
         var view = new MapView({
-              map: webmap,  // The WebMap instance created above
+              map: map,  // The Map instance created above
               container: "viewDiv",
               center: [-89.7,44.8],
               zoom: 7,
@@ -100,37 +96,48 @@
 //        document
 //          .getElementById("submit")
 //          .addEventListener("click", runAnalysis);
-//
-//        function runAnalysis() {
-//              var message = document.getElementById("message");
-//        // initialize geoprocessor task
-//            var gpUrl =
-//              "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
-//    
-//            var gp = new Geoprocessor({
-//              url: gpUrl,
-//              outSpatialReference: {
-//                wkid: 102100
-//              }
-//            });
-//              
-//            var gpParams = {
-//                k: dom.byId("kvalue").value,
-//                HexSize: dom.byID("hexsize")
-//                }
-//              
-//            gp.submitJob(gpParams).then(drawResultData);
-//          }
-//
-//        function drawResultData(result) {
-//            clearAll()
-//            webmap.add(layerCancer);
-//            webmap.add(layerNitrates);
-//            webmap.add(layerResiduals);
-//            webmap.add(layerStdDev);
-//            });
 
+        // run the gp process with new k and remove layers and draw new results
+        function runAnalysis() {
+            var message = document.getElementById("message");
+            // initialize geoprocessor task
+            var gpUrl =
+              "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
+    
+            var gp = new Geoprocessor({
+              url: gpUrl,
+              outSpatialReference: {
+                wkid: 102100
+              }
+            });
+              
+            var gpParams = {
+                k: dom.byId("kvalue").value
+//                HexSize: dom.byID("hexsize")
+                }
+              
+            gp.submitJob(gpParams).then(updateLayers);
+            
+            // Listen for any layer being added or removed in the Map
+            map.allLayers.on("change", function(event) {
+                console.log("Layer added: ", event.added);
+                console.log("Layer removed: ", event.removed);
+                console.log("Layer moved: ", event.moved);
+                });
+            }
           
+        // remove layers
+        function removeLayers() {
+            map.removeMany([layerCancer, layerNitrates, layerStdDev]);
+            }
+          
+        // Add layers to the map with updated data
+        function updateLayers(result) {
+            removeLayers()
+            map.addMany([layerCancer, layerNitrates, layerStdDev]);
+            }
+
+        // create a default symbology for unclassified features
         const defaultSym = {
           type: "simple-fill", // autocasts as new SimpleFillSymbol()
           outline: {
@@ -140,7 +147,7 @@
           }
         };
 
-
+          // graduated color ramp for cancer rates
         const rendererCancer = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -157,7 +164,7 @@
                 {
                   value: 500,
                   color: "#FFFFD4",
-                  label: "< 500"
+                  label: "500"
                 },
                 {
                   value: 750,
@@ -166,7 +173,7 @@
                 {
                   value: 1000,
                   color: "#FE9929",
-                  label: "< 1000"
+                  label: "1000"
                 },
                 {
                   value: 1250,
@@ -175,13 +182,14 @@
                 {
                   value: 1500,
                   color: "#993404",
-                  label: "< 1500"
+                  label: "1500"
                 }
               ]
             }
           ]
         };
-          
+        
+        // graduated color ramp for nitrate rates
         const rendererNitrate = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -224,50 +232,8 @@
             }
           ]
         };
-          
-        const rendererResidual = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: defaultSym,
-          label: "Hex Bin",
-          visualVariables: [
-            {
-              type: "color",
-              field: "Residual",
-//              normalizationField: "",
-              legendOptions: {
-                title: "Residual"
-              },
-              stops: [
-                {
-                  value: -400,
-                  color: "#000004",
-                  label: "-400"
-                },
-                {
-                  value: -100,
-                  color: "#51127C",
-                  label: "-100"
-                },
-                {
-                  value: 100,
-                  color: "#B7377A",
-                  label: "100"
-                },
-                {
-                  value: 400,
-                  color: "#FC8861",
-                 label: "400"
-                },
-                {
-                  value: 810,
-                  color: "#FC8861",
-                  label: "800"
-                }
-              ]
-            }
-          ]
-        };
-          
+         
+        // graduated color ramp for standard devation of residuals
         const rendererStdDev= {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -310,50 +276,110 @@
             }
           ]
         };
-          
+
+//        // graduated color ramp for residual values
+//        const rendererResidual = {
+//          type: "simple", // autocasts as new SimpleRenderer()
+//          symbol: defaultSym,
+//          label: "Hex Bin",
+//          visualVariables: [
+//            {
+//              type: "color",
+//              field: "Residual",
+////              normalizationField: "",
+//              legendOptions: {
+//                title: "Residual"
+//              },
+//              stops: [
+//                {
+//                  value: -400,
+//                  color: "#000004",
+//                  label: "-400"
+//                },
+//                {
+//                  value: -100,
+//                  color: "#51127C",
+//                  label: "-100"
+//                },
+//                {
+//                  value: 100,
+//                  color: "#B7377A",
+//                  label: "100"
+//                },
+//                {
+//                  value: 400,
+//                  color: "#FC8861",
+//                 label: "400"
+//                },
+//                {
+//                  value: 810,
+//                  color: "#FC8861",
+//                  label: "800"
+//                }
+//              ]
+//            }
+//          ]
+//        };
+        
+        // cancer rate feature layer
         var layerCancer = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
           title : "Cancer Rate (People Per 10k)",
-          renderer: rendererCancer
+          renderer: rendererCancer,
+          visible: false
         }); 
-                
+          
+        // nitrate rate feature layer
         var layerNitrate = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
           title : "Nitrate Rate",
-          renderer: rendererNitrate
+          renderer: rendererNitrate,
+          visible: false
         }); 
-//        
-        var layerResidual = new FeatureLayer({
-          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-          title : "Residual",
-          renderer: rendererResidual
-        }); 
-          
+
+//        // residual value feature layer
+//        var layerResidual = new FeatureLayer({
+//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+//          title : "Residual",
+//          renderer: rendererResidual
+//        }); 
+        
+        // standard deviation feature layer
         var layerStdDev = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
           title : "Standard Deviation",
           renderer: rendererStdDev
         })
-          
+
+        // well feature layer
         var layerWell = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/0",
-          title : "Well"
+          title: "Well",
+          visible: false
         }); 
-        
+
+        // census tract feature layer
         var layerTract = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/1",
-          title : "Census Tract"
+          title : "Census Tract",
+          visible: false
         });
-          
+
+        // county feature layer
         var layerCounty = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_Project1_BaseData/MapServer/2",
-          title : "County"
+          title : "County",
+          visible: false
         });  
-          
-        webmap.add(layerCancer);
-        webmap.add(layerNitrate);
-        webmap.add(layerResidual);
-        webmap.add(layerStdDev);
+        
+        map.add(layerWell);
+        map.add(layerTract);
+        map.add(layerCounty);
+        map.add(layerCancer);
+        map.add(layerNitrate);
+        map.add(layerStdDev);
+//        map.add(layerResidual);
+
           
         // Add a legend instance to the panel of a
         // ListItem in a LayerList instance
@@ -437,15 +463,12 @@
         view.ui.add(bgExpand, "bottom-left"); 
 
         // add a legend widget instance to the view
-        // and set the style to 'card'. This is a
-        // responsive style, which is good for mobile devices
-        // or 'classic' for PC users
         const legend = new Expand({
             expandIconClass: "esri-icon-layer-list",  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font
             expandTooltip: "Legend",
             content: new Legend({
                 view: view,
-                style: "classic" // other styles include 'card'
+                style: "card" // other styles include 'card'
                 }),
             view: view,
             expanded: true
@@ -472,9 +495,18 @@
             <p>    
                 Please choose a value for <i>k</i> that is greater than 1 and a <i>Hex Bin</i> size (sq. mi.) to aggregate the analysis results:  
             </p>
+            </p>
+                <label>
+                K
+                <input type="text" required placeholder="Must be an integer between 1 and 30" class="input-error">
+                <div class="input-error-message is-active">
+                Value is not an integer between 1 and 30.
+                </div>
+                </label>
+              <button type="submit" class="esir=button">Submit</button>
             <form>
               <input type="text" id="kvalue" name="kvalue" value="2">
-              <input type="submit" value="Run Analysis">
+              <input type="submit" value="Run Analysis" class = "esri-button">
             </form>             
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
             </p>
