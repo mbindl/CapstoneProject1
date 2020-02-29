@@ -8,6 +8,7 @@
     />
     <title>Mapping Nitrates and Cancer</title>
     <style>
+        @import "calcite-web-dark";
       html,
       body,
       #viewDiv {
@@ -31,13 +32,23 @@
         color: white;
         padding: 3%;
       }
+      
+        .btn{
+  color: $gray;
+}
     </style>
     <link
       rel="stylesheet"
       href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
     />
-    <script src="https://js.arcgis.com/4.14/"></script>
+      
+    <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
 
+    <!-- Just before end of body -->
+    <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/js/calcite-web.min.js"></script>
+      
+    <script src="https://js.arcgis.com/4.14/"></script>
+      
     <script>
       require([
         "esri/config",
@@ -93,9 +104,9 @@
           }
             });
           
-//        document
-//          .getElementById("submit")
-//          .addEventListener("click", runAnalysis);
+        document
+          .getElementById("submit")
+          .addEventListener("click", runAnalysis);
 
         // run the gp process with new k and remove layers and draw new results
         function runAnalysis() {
@@ -112,7 +123,7 @@
             });
               
             var gpParams = {
-                k: dom.byId("kvalue").value
+                k: dom.byId("k").value
 //                HexSize: dom.byID("hexsize")
                 }
               
@@ -132,7 +143,7 @@
             }
           
         // Add layers to the map with updated data
-        function updateLayers(result) {
+        function updateLayers() {
             removeLayers()
             map.addMany([layerCancer, layerNitrates, layerStdDev]);
             }
@@ -484,29 +495,22 @@
     <div id="viewDiv">
       <div id="sidebar" class="esri-widget">
         <div id="text">
-        <h2>Cancer Rates and Nitrate Levels</h2>
-            <h3>An exploratory analysis.</h3>
+        <h4><strong>Cancer Rates and Nitrate Levels</strong></h4>
+            <h5><i>An exploratory analysis.</i></h5>
           <p>
               High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancers by cataloging the location of all cancer occurrences over a ten-year period. In addition, they assembled a database of nitrate levels in a group of test wells throughout the state.
             </p>
             <p>              
               This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting (IDW) analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
             </p>
-            <p>    
-                Please choose a value for <i>k</i> that is greater than 1 and a <i>Hex Bin</i> size (sq. mi.) to aggregate the analysis results:  
             </p>
-            </p>
-                <label>
-                K
-                <input type="text" required placeholder="Must be an integer between 1 and 30" class="input-error">
-                <div class="input-error-message is-active">
-                Value is not an integer between 1 and 30.
-                </div>
-                </label>
-              <button type="submit" class="esir=button">Submit</button>
+
             <form>
-              <input type="text" id="kvalue" name="kvalue" value="2">
-              <input type="submit" value="Run Analysis" class = "esri-button">
+            <label>
+                <h6><b>Please choose a value for <i>k</i> that is greater than 1:</b></h6>
+                <input type="number" id = "k" required placeholder="2" min = 1>
+                <button type="button" id = "submit" class = "btn btn-clear-white"><b>Run Analysis</b></button>
+            </label>
             </form>             
             <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
             </p>
