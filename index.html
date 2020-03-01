@@ -174,9 +174,7 @@
           title: "Hex Bin: {GRID_ID}",
           content: [
             {
-              // It is also possible to set the fieldInfos outside of the content
-              // directly in the popupTemplate. If no fieldInfos is specifically set
-              // in the content, it defaults to whatever may be set within the popupTemplate.
+              // fields to add to the popup
               type: "fields",
               fieldInfos: [
                 {
@@ -215,7 +213,8 @@
             }
           ]
         };
-          // graduated color ramp for cancer rates
+          
+        // graduated color ramp for cancer rates
         const rendererCancer = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -392,7 +391,7 @@
         // cancer rate feature layer
         var layerCancer = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-          title : "Cancer Rate (People Per 10k)",
+          title : "Cancer Rate (%)",
           renderer: rendererCancer,
           visible: false
         }); 
@@ -400,7 +399,7 @@
         // nitrate rate feature layer
         var layerNitrate = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-          title : "Nitrate Rate",
+          title : "Nitrate Rate (ppm)",
           renderer: rendererNitrate,
           visible: false
         }); 
