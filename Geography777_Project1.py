@@ -149,13 +149,16 @@ try:
     arcpy.OrdinaryLeastSquares_stats("hexbin", "ID", ols,
                                      "CancerRate", "NitrateRate",
                                      olsCoefTab, olsDiagTab)
-    # transfer attributes to Parcel Layer
+    # transfer attributes to hexbins
     fieldJoinCalc('hexbin', ['ID', 'Residual'], 'OLS', ['ID', 'Residual'])
     print("The 'Residual' field in the hexbin data has been updated")
 
-    # transfer attributes to Parcel Layer
     fieldJoinCalc('hexbin', ['ID', 'Estimated'], 'OLS', ['ID', 'Estimated'])
     print("The 'Estimated' field in the hexbin data has been updated")
+
+    fieldJoinCalc('hexbin', ['ID', 'StdResidual'], 'OLS', ['ID', 'StdResid'])
+    print("The 'Estimated' field in the hexbin data has been updated")
+
 except:
     # If an error occurred when running the tool, print out the error message.
     print(arcpy.GetMessages())
