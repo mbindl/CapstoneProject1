@@ -49,7 +49,41 @@ def fieldJoinCalc(updateFC, updateFieldsList, sourceFC, sourceFieldsList):
 
 ## --------------------------------------------------------------------------------------------##
 
-
+# Generate Tesselation
+#
+# # delete feature class if it already exists
+# if arcpy.Exists("hexbin"):
+#     arcpy.Delete_management("hexbin")
+#
+# tessellation_extent = arcpy.Extent(-10340405, 5234953, -9656979, 5992793)
+# spatial_ref = arcpy.SpatialReference(3857)
+# arcpy.GenerateTessellation_management("hexbin",
+#                                       tessellation_extent, "HEXAGON",
+#                                       "500 SquareMiles", spatial_ref)
+#
+# # Set local variables
+# inFeatures = "hexbin"
+# fieldName1 = "ID"
+# fieldName2 = "CancerRate"
+# fieldName3 = "NitrateRate"
+# fieldName4 = "Residual"
+# fieldName5 = "Estimated"
+# fieldName6 = "StdResidual"
+#
+# # Execute AddField twice for two new fields
+# arcpy.AddField_management(inFeatures, fieldName1, "SHORT")
+# arcpy.AddField_management(inFeatures, fieldName2, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName3, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName4, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName5, "DOUBLE")
+# arcpy.AddField_management(inFeatures, fieldName6, "DOUBLE")
+#
+# # create unqique integer id field for OLS to use
+# updateFieldsList = ['OBJECTID', 'ID']
+# with arcpy.da.UpdateCursor(inFeatures, updateFieldsList) as cursor:
+#     for row in cursor:
+#         row[1] = row[0]
+#         cursor.updateRow(row)
 
 ## --------------------------------------------------------------------------------------------##
 
@@ -63,7 +97,8 @@ outRaster = "idw_nitrate"
 inPointFeatures = "Well_Nitrate"
 zField = "nitr_con"
 cellSize = 0.01
-k = arcpy.GetParameter(0)
+# k = arcpy.GetParameter(0)
+k = 2
 searchRadius = RadiusVariable('', 12)
 
 # delete output if it exists
@@ -107,7 +142,7 @@ if arcpy.Exists("cancer_rate"):
 inFeature = "CancerRate_CensusTract"
 outRaster = "cancer_rate"
 # cellSize = 0.01
-field = "GEOID10"
+field = "canrate"
 
 # Execute FeatureToRaster
 arcpy.FeatureToRaster_conversion(inFeature, field, outRaster)
@@ -157,7 +192,7 @@ try:
     print("The 'Estimated' field in the hexbin data has been updated")
 
     fieldJoinCalc('hexbin', ['ID', 'StdResidual'], 'OLS', ['ID', 'StdResid'])
-    print("The 'Estimated' field in the hexbin data has been updated")
+    print("The 'Standard Deviation of Residuals' field in the hexbin data has been updated")
 
 except:
     # If an error occurred when running the tool, print out the error message.
