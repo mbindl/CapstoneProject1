@@ -132,6 +132,7 @@
             var options = {
               statusCallback: function(jobInfo1) {
                 progTest(jobInfo1);
+                removeLayers();
               }
             };
             // once the job completes, add resulting layer to map
@@ -579,7 +580,7 @@
             </label>
             <label id="message" class="label"></label>
             </form>             
-            <p> After the interpolation, both the nitrate and cancer rate values are aggregated to 500 square mile hexbins. An ordinary least squares (OLS) regression is performed to determine if high nitrate levels explain cancer occurrences. The results of the OLS regression are mapped here as the standard deviation of the residual values.
+            <p> After the interpolation, both the nitrate and cancer rate values are aggregated to 500 square mile hexbins. An ordinary least squares (OLS) regression is performed to determine if high nitrate levels explain cancer occurrences. The results of the OLS regression are mapped here as the standard deviation of the residual values. Complete results are viewable by clicking on a Hex Bin.
             </p>
         </div>
       </div>

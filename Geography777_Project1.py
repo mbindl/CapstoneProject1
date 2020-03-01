@@ -25,6 +25,9 @@ env.workspace = "//ARCPROD//c$//GISData//Geog777_Project_1.gdb"
 # Set Overwrite option
 env.OverwriteOutput = True
 
+# check out spatial extension
+arcpy.CheckOutExtension("Spatial")
+
 ## --------------------------------------------------------------------------------------------##
 
 # function to transfer attribute values from table to feature class
@@ -200,3 +203,5 @@ except:
 
 ## --------------------------------------------------------------------------------------------##
 
+# check in spatial extension license
+arcpy.CheckInExtension("Spatial")
