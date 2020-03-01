@@ -137,7 +137,7 @@
             // once the job completes, add resulting layer to map
             gp.waitForJobCompletion(jobInfo.jobId, options).then(updateLayers)
           });
-        }
+          }
 
 //          // Listen for any layer being added or removed in the Map
 //          map.allLayers.on("change", function(event) {
@@ -564,12 +564,11 @@
       <div id="sidebar" class="esri-widget">
         <div id="text">
         <h4><strong>Cancer Rates and Nitrate Levels</strong></h4>
-            <h5><i>An exploratory analysis.</i></h5>
           <p>
-              High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancers by cataloging the location of all cancer occurrences over a ten-year period. In addition, they assembled a database of nitrate levels in a group of test wells throughout the state.
+              High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrates has emerged, but the magnitude of the risk is unknown. The Wisconsin Department of Natural Resources has collected data on cancer rates over a ten-year period. In addition, they assembled a database of nitrate levels from wells throughout the state.
             </p>
             <p>              
-              This application allows the user to investigate the relationship between nitrate levels and cancer through spatial analysis. The first part of the application performs an inverse distance weighting (IDW) analysis to produce an interpolated raster surface representing nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
+              This application gives the ability to investigate the relationship between nitrate levels and cancer. The first part of the of the analysis performs an inverse distance weighting (IDW) interpolation to produce a raster of nitrate levels. The IDW process uses a weighted distance coeficient <i>k</i>. There is no theory to say what the distance exponent <i>k</i> should be. 
             </p>
             </p>
 
@@ -581,9 +580,7 @@
             </label>
             <label id="message" class="label"></label>
             </form>             
-            <p> After the IDW raster of Nitrate values is created the application will autmatically aggregate the mean values of both nitrates and cancer rates to 500 square mile hexbins and run an ordinary least squares (OLS) regression to determine if nitrate concentrations are related to cancer occurrences.
-            
-            The results of the OLS regression are mapped here as a color ramp of the residual standard deviation values and available by clicking on a hexbin to view the attributes in a popup.
+            <p> After the interpolation, both the nitrate and cancer rate values are aggregated to 500 square mile hexbins. An ordinary least squares (OLS) regression is performed to determine if high nitrate levels explain cancer occurrences. The results of the OLS regression are mapped here as the standard deviation of the residual values.
             </p>
         </div>
       </div>
