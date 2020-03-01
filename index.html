@@ -110,7 +110,7 @@
             });
           
         var gpUrl =
-              "https://maps.trpa.org/server/rest/services/CancerRatesNitrateValues/GPServer/Cancer%20Rates%20and%20Nitrate%20Values";
+              "hhttps://maps.trpa.org/server/rest/services/GPToolCancerNitrate/GPServer/GPToolCancerNitrate";
     
         var gp = new Geoprocessor({
           url: gpUrl,
@@ -126,7 +126,6 @@
         
         // run the gp process with new k and remove layers and draw new results
         function runAnalysis(){
-          removeLayers();
           var k = document.getElementById("k").value;
           console.log("Distance Decay Coefficient: " + k);
           var params = {"k": k};
