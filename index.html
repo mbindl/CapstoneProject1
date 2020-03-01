@@ -70,8 +70,7 @@
         "esri/widgets/LayerList/LayerListViewModel",
         "esri/widgets/Home",
         "esri/widgets/Legend",
-        "esri/widgets/Print",
-        "esri/renderers/ClassBreaksRenderer"
+        "esri/widgets/Print"
       ], function(
         esriConfig,
         Map,
@@ -85,8 +84,7 @@
         LayerListVM,
         Home,
         Legend,
-        Print,
-        ClassBreaksRenderer
+        Print
       ) {
         // set the active portal
           {
@@ -406,13 +404,6 @@
           renderer: rendererNitrate,
           visible: false
         }); 
-
-//        // residual value feature layer
-//        var layerResidual = new FeatureLayer({
-//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
-//          title : "Residual",
-//          renderer: rendererResidual
-//        }); 
         
         // standard deviation feature layer
         var layerStdDev = new FeatureLayer({
@@ -442,7 +433,14 @@
           title : "County",
           visible: false
         });  
-        
+          
+//        // residual value feature layer
+//        var layerResidual = new FeatureLayer({
+//          url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
+//          title : "Residual",
+//          renderer: rendererResidual
+//        }); 
+          
         map.add(layerCounty);
         map.add(layerTract);
         map.add(layerWell);
@@ -542,7 +540,7 @@
                 style: "card" // other styles include 'card'
                 }),
             view: view,
-            expanded: true
+            expanded: false
         });
           
         view.ui.add(legend, "bottom-right");
