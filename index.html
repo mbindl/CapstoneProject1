@@ -171,6 +171,52 @@
           }
         };
 
+          var template = {
+          // autocasts as new PopupTemplate()
+          title: "Hex Bin: {GRID_ID}",
+          content: [
+            {
+              // It is also possible to set the fieldInfos outside of the content
+              // directly in the popupTemplate. If no fieldInfos is specifically set
+              // in the content, it defaults to whatever may be set within the popupTemplate.
+              type: "fields",
+              fieldInfos: [
+                {
+                  fieldName: "CancerRate",
+                  label: "Cancer Rate",
+                  format: {
+                    digitSeparator: true,
+                    places: 2
+                  }
+                },
+                {
+                  fieldName: "NitrateRate",
+                  label: "Nitrate Level",
+                  format: {
+                    digitSeparator: true,
+                    places: 2
+                  }
+                },
+                {
+                  fieldName: "Residual",
+                  label: "Residual",
+                  format: {
+                    digitSeparator: true,
+                    places: 2
+                  }
+                },
+                {
+                  fieldName: "StdResidual",
+                  label: "Standard Deviation of Residual",
+                  format: {
+                    digitSeparator: true,
+                    places: 2
+                  }
+                }
+              ]
+            }
+          ]
+        };
           // graduated color ramp for cancer rates
         const rendererCancer = {
           type: "simple", // autocasts as new SimpleRenderer()
@@ -372,7 +418,8 @@
         var layerStdDev = new FeatureLayer({
           url: "https://maps.trpa.org/server/rest/services/Geography777_HexBin/MapServer/0",
           title : "Standard Deviation",
-          renderer: rendererStdDev
+          renderer: rendererStdDev,
+          popupTemplate: template
         })
 
         // well feature layer
@@ -507,7 +554,7 @@
         }
 
         function errBack(error) {
-          message.innerText = "";
+          message.innerText = "job-failed";
           console.log("gp error: ", error);
         }
       });
